@@ -1,5 +1,5 @@
 set serveroutput on
 begin
-  detonation(in_text => 'Hello World');
+  detonation(in_text => '');
 end;
 /
