@@ -1,11 +1,14 @@
 create or replace procedure detonation (in_text in varchar2) is
   anzahl_zeichen_in_text constant pls_integer := coalesce(length(in_text),0);
   max_anzahl_ausgabe_pro_zeile constant pls_integer := (anzahl_zeichen_in_text * 2 ) - 1;
-  aktuelle_ausgabe_position pls_integer;
   
   -- für prozedur gib_nextes_zeichen()
   start_zeiger_in_text pls_integer := anzahl_zeichen_in_text; --soll bei jedem loop um 1 reduziert werden
   fliess_zeiger pls_integer; -- bewegt sich innerhalb eines loops nach rechts um jede zwei stelle vorwärts 
+  
+  -- variablen für die ausgabe
+  aktuelle_ausgabe_position pls_integer := max_anzahl_ausgabe_pro_zeile;
+  fliess_ausgabe_position pls_integer;
   
   function gib_nextes_zeichen return varchar2
     is
@@ -30,13 +33,22 @@ begin
     return;
   end if;
   
-  --test gib nextes_zeichen
-  fliess_zeiger := 9;
-  --hier gehts weiter..
-  dbms_output.put_line('gib nächstes zeichen: ' || gib_nextes_zeichen);
-  dbms_output.put_line('gib nächstes zeichen: ' || gib_nextes_zeichen);
-  dbms_output.put_line('gib nächstes zeichen: ' || gib_nextes_zeichen);
-  dbms_output.put_line('gib nächstes zeichen: ' || gib_nextes_zeichen);
+  for i in 1 .. 11 loop
+    
+    fliess_ausgabe_position := aktuelle_ausgabe_position;
+    
+    loop
+      
+      dbms_output.put_line ('im inner loop: fliess_ausgabe_position:' || fliess_ausgabe_position);
+      
+      fliess_ausgabe_position := fliess_ausgabe_position + 2;
+      exit when max_anzahl_ausgabe_pro_zeile < fliess_ausgabe_position;
+    end loop;
+    dbms_output.put_line('im for-loop: ' || i || '. Ausgabezeile beendet.');
+    aktuelle_ausgabe_position := aktuelle_ausgabe_position - 2;
+
+  end loop;
+
   
 
 end detonation;
