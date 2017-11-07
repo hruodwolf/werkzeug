@@ -10,6 +10,8 @@ create or replace procedure detonation (in_text in varchar2) is
   aktuelle_ausgabe_position pls_integer := max_anzahl_ausgabe_pro_zeile;
   fliess_ausgabe_position pls_integer;
   
+  zeiger_vorwaerts boolean := false;
+  
   function gib_nextes_zeichen return varchar2
     is
     nextes_zeichen varchar2(1);
@@ -33,19 +35,30 @@ begin
     return;
   end if;
   
-  for i in 1 .. 11 loop
+  for i in 1 .. 21 loop
     
     fliess_ausgabe_position := aktuelle_ausgabe_position;
     
-    loop
+      loop
+        
+        dbms_output.put_line ('im inner loop: fliess_ausgabe_position:' || fliess_ausgabe_position);
+        
+        fliess_ausgabe_position := fliess_ausgabe_position + 4;
+        exit when max_anzahl_ausgabe_pro_zeile < fliess_ausgabe_position;
+      end loop;
+      dbms_output.put_line('im for-loop: ' || i || '. Ausgabezeile beendet.');
       
-      dbms_output.put_line ('im inner loop: fliess_ausgabe_position:' || fliess_ausgabe_position);
+      if aktuelle_ausgabe_position in (0,1) then
+        zeiger_vorwaerts := true;
+      end if;
       
-      fliess_ausgabe_position := fliess_ausgabe_position + 2;
-      exit when max_anzahl_ausgabe_pro_zeile < fliess_ausgabe_position;
-    end loop;
-    dbms_output.put_line('im for-loop: ' || i || '. Ausgabezeile beendet.');
-    aktuelle_ausgabe_position := aktuelle_ausgabe_position - 2;
+      if zeiger_vorwaerts then
+        aktuelle_ausgabe_position := aktuelle_ausgabe_position + 2;
+      else
+        aktuelle_ausgabe_position := aktuelle_ausgabe_position - 2;
+      end if;
+    
+
 
   end loop;
 
