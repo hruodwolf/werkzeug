@@ -4,7 +4,7 @@ create or replace procedure detonation (in_text in varchar2) is
   
   -- für prozedur gib_nextes_zeichen()
   start_zeiger_in_text pls_integer := anzahl_zeichen_in_text; --soll bei jedem loop um 1 reduziert werden
-  fliess_zeiger pls_integer; -- bewegt sich innerhalb eines loops nach rechts um jede zwei stelle vorwärts 
+  fliess_zeiger_in_text pls_integer; -- bewegt sich innerhalb eines loops nach rechts um jede zwei stelle vorwärts 
   
   -- variablen für die ausgabe
   aktuelle_ausgabe_position pls_integer := max_anzahl_ausgabe_pro_zeile;
@@ -12,15 +12,48 @@ create or replace procedure detonation (in_text in varchar2) is
   
   zeiger_vorwaerts boolean := false;
   
+  ausgabe varchar2(100);
+  
   function gib_nextes_zeichen return varchar2
     is
     nextes_zeichen varchar2(1);
   begin
     -- nächstes zeichen heisst hier es wird jedes zweite zeichen zurückgegeben
-    nextes_zeichen := substr(in_text,fliess_zeiger,1);
-    fliess_zeiger := fliess_zeiger + 2;
+    nextes_zeichen := substr(in_text,fliess_zeiger_in_text,1);
+    fliess_zeiger_in_text := fliess_zeiger_in_text + 2;
     return nextes_zeichen;
   end gib_nextes_zeichen;
+  
+  function insertString (str1 varchar2, str2 varchar2, pos number) 
+    return varchar2 is
+    
+    insertedString varchar2(100);
+    str1Length pls_integer := length(str1);
+    str2Length pls_integer := length(str2);
+    
+    strNew1 varchar2(100);
+    strNew2 varchar2(100);
+    strNew3 varchar2(100);
+  begin
+    dbms_output.put_line('str1Length: ' || str1Length);
+    dbms_output.put_line('str2Length: ' || str2Length);
+    dbms_output.put_line('pos: ' || pos);
+    
+    if str1Length < pos then
+      dbms_output.put_line('Fehler: pos ist größer als str1Length! Return NULL');
+      return null;
+    end if;
+  
+    strNew1 := substr(str1,1, pos-1);
+    dbms_output.put_line('strNew1: ' || strNew1);
+    strNew2 := str2;
+    dbms_output.put_line('strNew2: ' || strNew2);
+    strNew3 := substr (str1,length(strNew1 || strNew2)+1);
+    dbms_output.put_line('strNew3: ' || strNew3);
+    
+    insertedString := strNew1 || strNew2 || strNew3;
+    return insertedString;
+  end insertString;
   
 begin
   dbms_output.put_line('in_text: ' || coalesce(in_text, 'NULL'));
@@ -38,25 +71,31 @@ begin
   for i in 1 .. 21 loop
     
     fliess_ausgabe_position := aktuelle_ausgabe_position;
+    fliess_zeiger_in_text   := start_zeiger_in_text;
     
-      loop
-        
-        dbms_output.put_line ('im inner loop: fliess_ausgabe_position:' || fliess_ausgabe_position);
-        
-        fliess_ausgabe_position := fliess_ausgabe_position + 4;
-        exit when max_anzahl_ausgabe_pro_zeile < fliess_ausgabe_position;
-      end loop;
-      dbms_output.put_line('im for-loop: ' || i || '. Ausgabezeile beendet.');
+    loop
+      --dbms_output.put_line ('im inner loop: fliess_ausgabe_position:' || fliess_ausgabe_position || '/' || gib_nextes_zeichen);
       
-      if aktuelle_ausgabe_position in (0,1) then
-        zeiger_vorwaerts := true;
-      end if;
+      fliess_ausgabe_position := fliess_ausgabe_position + 4;
       
-      if zeiger_vorwaerts then
-        aktuelle_ausgabe_position := aktuelle_ausgabe_position + 2;
-      else
-        aktuelle_ausgabe_position := aktuelle_ausgabe_position - 2;
-      end if;
+      ausgabe := concat(ausgabe, gib_nextes_zeichen);
+      exit when max_anzahl_ausgabe_pro_zeile < fliess_ausgabe_position;
+    end loop;
+    dbms_output.put_line('im for-loop: ' || i || '. Ausgabezeile beendet.');
+    dbms_output.put_line(lpad(ausgabe, max_anzahl_ausgabe_pro_zeile));
+    ausgabe := null; -- zurücksetzen für die nächste zeile
+    
+    if aktuelle_ausgabe_position in (0,1) then
+      zeiger_vorwaerts := true;
+    end if;
+      
+    if zeiger_vorwaerts then
+      aktuelle_ausgabe_position := aktuelle_ausgabe_position + 2;
+      start_zeiger_in_text      := start_zeiger_in_text + 1;
+    else
+      aktuelle_ausgabe_position := aktuelle_ausgabe_position - 2;
+      start_zeiger_in_text      := start_zeiger_in_text - 1;
+    end if;
     
 
 
