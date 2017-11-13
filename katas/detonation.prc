@@ -35,38 +35,47 @@ create or replace procedure detonation (in_text in varchar2) is
     strNew2 varchar2(100);
     strNew3 varchar2(100);
   begin
-    dbms_output.put_line('str1Length: ' || str1Length);
-    dbms_output.put_line('str2Length: ' || str2Length);
-    dbms_output.put_line('pos: ' || pos);
+    --dbms_output.put_line('str1Length: ' || str1Length);
+    --dbms_output.put_line('str2Length: ' || str2Length);
+    --dbms_output.put_line('pos: ' || pos);
     
     if str1Length < pos then
-      dbms_output.put_line('Fehler: pos ist größer als str1Length! Return NULL');
+      --dbms_output.put_line('Fehler: pos ist größer als str1Length! Return NULL');
       return null;
     end if;
   
     strNew1 := substr(str1,1, pos-1);
-    dbms_output.put_line('strNew1: ' || strNew1);
+    --dbms_output.put_line('strNew1: ' || strNew1);
     strNew2 := str2;
-    dbms_output.put_line('strNew2: ' || strNew2);
+    --dbms_output.put_line('strNew2: ' || strNew2);
     strNew3 := substr (str1,length(strNew1 || strNew2)+1);
-    dbms_output.put_line('strNew3: ' || strNew3);
+    --dbms_output.put_line('strNew3: ' || strNew3);
     
     insertedString := strNew1 || strNew2 || strNew3;
     return insertedString;
   end insertString;
   
+  function leerzeichen(anzahl number)
+    return varchar2
+  is
+  begin
+    return lpad(chr(32), anzahl);
+  end leerzeichen;
+  
 begin
-  dbms_output.put_line('in_text: ' || coalesce(in_text, 'NULL'));
-  dbms_output.put_line('anzahl_zeichen_in_text: ' || anzahl_zeichen_in_text);
-  dbms_output.put_line('start_zeiger_in_text: ' || start_zeiger_in_text);
-  dbms_output.put_line('max_anzahl_ausgabe_zeichen_pro_zeile: ' || max_anzahl_ausgabe_pro_zeile);
-  dbms_output.put_line('aktuelle_ausgabe_position: ' || coalesce(to_char(aktuelle_ausgabe_position), 'NULL'));
+  --dbms_output.put_line('in_text: ' || coalesce(in_text, 'NULL'));
+  --dbms_output.put_line('anzahl_zeichen_in_text: ' || anzahl_zeichen_in_text);
+  --dbms_output.put_line('start_zeiger_in_text: ' || start_zeiger_in_text);
+  --dbms_output.put_line('max_anzahl_ausgabe_zeichen_pro_zeile: ' || max_anzahl_ausgabe_pro_zeile);
+  --dbms_output.put_line('aktuelle_ausgabe_position: ' || coalesce(to_char(aktuelle_ausgabe_position), 'NULL'));
 
   if anzahl_zeichen_in_text = 0 then
-    dbms_output.put_line('ungültiger parameter! eingabe-parameter enthält ' || anzahl_zeichen_in_text || ' zeichen!');
-    dbms_output.put_line('vorzeitiger abbruch mit RETURN');
+    --dbms_output.put_line('ungültiger parameter! eingabe-parameter enthält ' || anzahl_zeichen_in_text || ' zeichen!');
+    --dbms_output.put_line('vorzeitiger abbruch mit RETURN');
     return;
   end if;
+  
+  ausgabe := leerzeichen(max_anzahl_ausgabe_pro_zeile); --initial mit leerzeichen befüllen
   
   for i in 1 .. 21 loop
     
@@ -74,18 +83,20 @@ begin
     fliess_zeiger_in_text   := start_zeiger_in_text;
     
     loop
-      --dbms_output.put_line ('im inner loop: fliess_ausgabe_position:' || fliess_ausgabe_position || '/' || gib_nextes_zeichen);
+      --dbms_output.put_line ('im inner loop: fliess_ausgabe_position:' || fliess_ausgabe_position);
+    
+      ausgabe := insertString(ausgabe, gib_nextes_zeichen, fliess_ausgabe_position);
       
       fliess_ausgabe_position := fliess_ausgabe_position + 4;
       
-      ausgabe := concat(ausgabe, gib_nextes_zeichen);
       exit when max_anzahl_ausgabe_pro_zeile < fliess_ausgabe_position;
     end loop;
-    dbms_output.put_line('im for-loop: ' || i || '. Ausgabezeile beendet.');
-    dbms_output.put_line(lpad(ausgabe, max_anzahl_ausgabe_pro_zeile));
-    ausgabe := null; -- zurücksetzen für die nächste zeile
+    --dbms_output.put_line('im for-loop: ' || i || '. Ausgabezeile beendet.');
+    dbms_output.put_line(ausgabe);
+    ausgabe := leerzeichen(max_anzahl_ausgabe_pro_zeile); -- zurücksetzen für die nächste zeile
     
     if aktuelle_ausgabe_position in (0,1) then
+      --dbms_output.put_line('aktuelle_ausgabe_position: ' || aktuelle_ausgabe_position || '/ zeiger_vorwaerts := true'); 
       zeiger_vorwaerts := true;
     end if;
       
