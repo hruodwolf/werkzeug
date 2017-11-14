@@ -1,5 +1,7 @@
 create or replace procedure detonation (in_text in varchar2) is
   anzahl_zeichen_in_text constant pls_integer := coalesce(length(in_text),0);
+  
+  -- anzahl zeichen pro zeile entspricht auch der anzahl der ausgabe zeilen - für for-loop relevant
   max_anzahl_ausgabe_pro_zeile constant pls_integer := (anzahl_zeichen_in_text * 2 ) - 1;
   
   -- für prozedur gib_nextes_zeichen()
@@ -77,7 +79,7 @@ begin
   
   ausgabe := leerzeichen(max_anzahl_ausgabe_pro_zeile); --initial mit leerzeichen befüllen
   
-  for i in 1 .. 21 loop
+  for i in 1 .. max_anzahl_ausgabe_pro_zeile loop
     
     fliess_ausgabe_position := aktuelle_ausgabe_position;
     fliess_zeiger_in_text   := start_zeiger_in_text;
@@ -107,12 +109,8 @@ begin
       aktuelle_ausgabe_position := aktuelle_ausgabe_position - 2;
       start_zeiger_in_text      := start_zeiger_in_text - 1;
     end if;
-    
-
 
   end loop;
-
-  
 
 end detonation;
 /
