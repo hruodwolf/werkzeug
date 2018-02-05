@@ -12,3 +12,9 @@ BEGIN
   Bowling.Spiel (Reihe => Reihe1);
 END;
 /
+
+/*
+drop package body bowling;
+drop package bowling;
+
+*/
