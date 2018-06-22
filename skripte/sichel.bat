@@ -2,8 +2,8 @@
 echo ===============================================================
 echo starte sicherung A
 
-set quelle=g:\
-set ziel=e:\
+set quelle=e:\
+set ziel=f:\
 
 set quelleExistiert=false
 set zielExistiert=false
