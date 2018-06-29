@@ -13,7 +13,12 @@ SELECT
   FROM DUAL;
 
 SELECT 
-      'spool C:\tmp\trg_' || Lower(Synonym_Name) || '_bri.sql' || chr(10)
+      'spool C:\tmp\' || Lower(Synonym_Name) || '_seq.sql' || chr(10)
+  ||  'SELECT' || chr(10)
+  ||  '   rpad(chr(32),0) ||  ''CREATE SEQUENCE ' || Synonym_Name || '_SEQ START WITH 1 MAXVALUE 999999999999999 MINVALUE 1 NOCYCLE;''' ||  '|| chr(10)' || chr(10)
+  ||  'FROM DUAL;' || chr(10)
+  ||  'spool off;' || chr(10)
+  ||  'spool C:\tmp\trg_' || Lower(Synonym_Name) || '_bri.sql' || chr(10)
   ||  'SELECT' || chr(10)
   ||  '   rpad(chr(32),0) ||  ''CREATE OR REPLACE TRIGGER TRG_' || Synonym_Name || '_BRI''' || '|| chr(10)' || chr(10)
   ||  '|| rpad(chr(32),2) ||  ''BEFORE INSERT'' || chr(10)' || chr(10)
