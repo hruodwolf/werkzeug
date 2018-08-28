@@ -1,0 +1,49 @@
+node {
+    
+    def src_svn_username    = ''
+    def src_svn_password    = ''
+    def remote_svn_username = ''
+    def remote_svn_password = ''
+    
+    def src_url     = ''
+    def release_url = ''
+    def remote_url  = ''
+    
+    
+    sh """
+        echo def vars
+        echo ...
+        echo 'withCredentials(.. MKM wird einrichten'
+    """
+    stage("validations"){
+        sh """
+            echo '1. Validierung der Ziel-Versionsnummer @@VERSION@@. Richtiges Format ist z.B. 1809.0.0'
+            echo '2. Pruefen ob trunk-URL (kopieren von) existiert. https://svn.opitz-consulting.de/repos/fhr/trunk'
+            echo '.. abbruch falls nicht existiert'
+            echo '..@@BRANCH@@ gibt es nicht mehr da trunk-basierte entwicklung'
+            echo '3. Pruefen ob release-URL (kopieren nach) existiert. https://svn.opitz-consulting.de/repos/fhr/release/plr/1809.0/0'
+            echo '.. falls diese URL existiert, dann wurde bereits @@VERSION@@ ausgeliefert, abbruch und evtl. andere @@VERSION@@ eingeben'
+            echo '.. vorher @@VERSION@@ z.B. 1809.0.0 -> 1809.0/0 machen und mit release-Verzeichnis konkatinieren'
+            echo '4. Pruefen ob Entferntes-Zielverzeichnis existiert. https://svn.dewoe.corpintra.net/ZAPPLR/'
+            echo '.. abbruch falls nicht existiert'
+            
+            echo 'Beispiel: Pruefen ob Lokales-Zielverzeichnis existiert.'
+            svn info --username daimler_svc --password f9xwNrzu{c 'https://svn.opitz-consulting.de/repos/fhr/branch/ZAP_PLR_0.0'
+        """
+    }
+    
+    stage("svn copy"){
+        sh """
+            echo 'svn copy'
+            svn copy --username ${src_svn_username} --password ${src_svn_password} ${src_url} ${release_url} -m "release VERSION"
+        """
+    }
+    
+    stage("svn sync"){
+        
+        sh """
+            
+            svnsync sync --source-username '${src_svn_username}' --source-password '${src_svn_password}' --sync-username '${remote_svn_username}' --sync-password '${remote_svn_password}' ${remote_url}
+        """
+    }
+}
