@@ -1,0 +1,1 @@
+start PowerShell -NoProfile -ExecutionPolicy Bypass -Command "& D:\Ad\werkzeug\skripte\sicherungPowerShell\sicherung.ps1 %1"

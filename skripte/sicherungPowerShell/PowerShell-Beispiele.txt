@@ -1,0 +1,7 @@
+
+
+# Inhalt einlesen und über läuft über jede Zeile in Datei. "$_" steht für Zeile od. ein Element in dem foreach
+Get-Content D:\Ad\werkzeug\skripte\sicherungPowerShell\pfade.txt | foreach {$_.toupper(); echo "hier"}
+
+# Pause 5 Sekunden
+Start-Sleep -s 5
