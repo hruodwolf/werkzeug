@@ -1,5 +1,5 @@
 param(
-[string]$datei
+[string]$Datei
 )
 
 function Sichern ($Pfad) {
@@ -34,8 +34,9 @@ function Sichern ($Pfad) {
   robocopy $QuelleOrdner $ZielOrdner /MIR /LOG+:$Logdatei /TEE
 }
 
-Write-Host Parameterdatei $datei
+Write-Host "==== Daten-Sicherung ===="
+Write-Host "Parameterdatei " $Datei " einlesen.."
 
-$data = Get-Content $datei | foreach { Sichern -Pfad $_ }
+$data = Get-Content $Datei | foreach { Sichern -Pfad $_ }
 
 Start-Sleep -s 60
